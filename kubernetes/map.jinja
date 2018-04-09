@@ -1,0 +1,8 @@
+
+{% set common = salt['grains.filter_by']({
+    'Debian': {
+        'pkgs': ['ca-certificates', 'software-properties-common', 
+                 'python-pip', 'curl', 'git', 'apt-transport-https', 
+                 'openssl']
+    },
+}, merge=salt['pillar.get']('kubernetes:common')) %}

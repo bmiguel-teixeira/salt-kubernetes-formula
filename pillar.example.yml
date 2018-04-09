@@ -1,0 +1,12 @@
+kubernetes:
+  common:
+    masters:
+      - master1
+      - master2
+      - master3
+    nodes:
+      - node1
+      - node2
+      - node3
+    docker_base_binaries: gcr.io/google-containers/hyperkube
+    version: v1.10.0

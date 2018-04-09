@@ -1,0 +1,8 @@
+name: kubernetes
+os: Debian
+os_family: Debian
+version: 201710
+release: 1
+minimum_version: 2017.7 (Nitrogen)
+summary: Formula for provisioning kubernetes cluster
+description: Provisions a fully functional kubernetes cluster

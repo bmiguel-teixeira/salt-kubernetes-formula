@@ -1,5 +1,6 @@
 kubernetes:
   common:
+    cluster_dns: kubernetes.local
     masters:
       - master1
       - master2
@@ -8,5 +9,4 @@ kubernetes:
       - node1
       - node2
       - node3
-    docker_base_binaries: gcr.io/google-containers/hyperkube
-    version: v1.10.0
+    docker_base_binaries: gcr.io/google-containers/hyperkube:v1.10.0

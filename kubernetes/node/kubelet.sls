@@ -1,16 +1,6 @@
-{%- from "kubernetes/map.jinja" import common with context %}
 
-docker_container.running:
-  - name: kubelet
-  - image: {{ common.docker_base_binaries }}
-  - network_mode: host
-  - pid_mode: host
-  - privileged: True
-  - binds:
-    - /etc/kubernetes/manifests:/etc/kubernetes/manifests
-    - /var/lib/kubelet/:/var/lib/kubelet
-    - /var/lib/docker/:/var/lib/docker
-    - /var/run:/var/run
+
+
 
 
 
@@ -18,8 +8,15 @@ docker_container.running:
 
 '''
 docker run \
-
+    --volume=/dev:/dev \
+    --volume=/sys:/sys:ro \
+    --volume=/var/lib/docker/:/var/lib/docker:rw \
+    --volume=/var/lib/kubelet/:/var/lib/kubelet:shared \
+    --volume=/var/run:/var/run:rw \
+    --volume=/etc/kubernetes:/etc/kubernetes:ro \
+    --volume=/srv/kubernetes:/srv/kubernetes:ro \
     --net=host \
+    --pid=host \
     --privileged=true \
     --name=kubelet \
     -d \
@@ -31,8 +28,8 @@ docker run \
             --enable-server \
             --enable-debugging-handlers \
             --pod-manifest-path=/etc/kubernetes/manifests \
-            --register-schedulable=false \
-            --node-labels=role=master \
+            --register-schedulable=true \
+            --node-labels=role=node \
             --network-plugin=kubenet \
             --node-status-update-frequency=10s \
             --v=2 \

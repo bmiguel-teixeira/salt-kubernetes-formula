@@ -10,5 +10,5 @@ docker_repo:
 docker_engine:
  pkg.installed:
   - name: docker-ce
-  - version: '18.03.0-ce'
-- refresh: True
+  - version: '18.03.0~ce-0~ubuntu'
+  - refresh: True

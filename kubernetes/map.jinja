@@ -3,6 +3,6 @@
     'Debian': {
         'pkgs': ['ca-certificates', 'software-properties-common', 
                  'python-pip', 'curl', 'git', 'apt-transport-https', 
-                 'openssl']
+                 'openssl', 'python-m2crypto']
     },
 }, merge=salt['pillar.get']('kubernetes:common')) %}

@@ -1,0 +1,44 @@
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  name: "kube-apiserver"
+  namespace: "kube-system"
+  labels:
+    tier: control-plane
+    component: kube-apiserver
+spec:
+  hostNetwork: true
+  containers:
+    - name: "kube-apiserver"
+      image: "gcr.io/google-containers/hyperkube:v1.10.0"
+      command:
+        - "/hyperkube"
+        - "apiserver"
+        - "--admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota"
+        - "--address=0.0.0.0"
+        - "--allow-privileged"
+        - "--insecure-port=8080"
+        - "--secure-port=443"
+        - "--service-cluster-ip-range=192.168.1.76/16"
+        - "--etcd-servers=http://127.0.0.1:2379"
+        - "--etcd-quorum-read=true"
+        - "--advertise-address=192.168.1.76"
+        - "--tls-cert-file=/srv/kubernetes/server.crt"
+        - "--tls-private-key-file=/srv/kubernetes/server.key"
+        - "--client-ca-file=/srv/kubernetes/ca.crt"
+        - "--service-account-key-file=/srv/kubernetes/server.key"
+        - "--service-node-port-range=9000-10000"
+        - "--storage-backend=etcd3"
+        - "--v=4"
+      volumeMounts:
+        - name: "etc-kubernetes"
+          mountPath: "/srv/kubernetes"
+        - name: "var-lib-kubelet"
+          mountPath: "/var/lib/kubelet"
+  volumes:
+    - name: "etc-kubernetes"
+      hostPath:
+        path: "/srv/kubernetes"
+    - name: "var-lib-kubelet"
+      hostPath:
+        path: "/var/lib/kubelet"

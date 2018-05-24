@@ -1,0 +1,31 @@
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  name: "kube-scheduler"
+  namespace: "kube-system"
+  labels:
+    tier: control-plane
+    component: kube-scheduler
+spec:
+  hostNetwork: true
+  containers:
+    - name: "kube-scheduler"
+      image: "gcr.io/google-containers/hyperkube:v1.10.0"
+      command:
+        - "/hyperkube"
+        - "scheduler"
+        - "--kubeconfig=/var/lib/kubelet/kubeconfig"
+        - "--leader-elect=true"
+        - "--v=2"
+      volumeMounts:
+        - name: "srv-kubernetes"
+          mountPath: "/srv/kubernetes"
+        - name: "var-lib-kubelet"
+          mountPath: "/var/lib/kubelet"
+  volumes:
+    - name: "srv-kubernetes"
+      hostPath:
+        path: "/srv/kubernetes"
+    - name: "var-lib-kubelet"
+      hostPath:
+        path: "/var/lib/kubelet"

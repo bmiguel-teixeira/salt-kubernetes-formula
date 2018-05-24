@@ -1,4 +1,4 @@
 
 include:
 - kubernetes.master
-- kubernetes.nodes
+- kubernetes.node

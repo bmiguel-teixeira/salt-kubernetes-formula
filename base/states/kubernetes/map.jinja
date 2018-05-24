@@ -1,0 +1,15 @@
+
+{% set common = salt['grains.filter_by']({
+    'Debian': {
+        'pkgs': ['ca-certificates', 'software-properties-common', 
+                 'python-pip', 'curl', 'git', 'apt-transport-https', 
+                 'openssl', 'python-m2crypto'],
+        'pips': ['docker'],
+        'kubernetes_base_path': '/etc/kubernetes',
+        'manifests_path': '/etc/kubernetes/manifests',
+        'ca_key': '/etc/kubernetes/ca.key',
+        'ca_crt': '/etc/kubernetes/ca.crt',
+        'api_server_key': '/etc/kubernetes/api_server_key.key',
+        'api_server_crt': '/etc/kubernetes/api_server_crt.key'
+    },
+}, merge=salt['pillar.get']('kubernetes:common')) %}

@@ -3,13 +3,13 @@
     'Debian': {
         'pkgs': ['ca-certificates', 'software-properties-common', 
                  'python-pip', 'curl', 'git', 'apt-transport-https', 
-                 'openssl', 'python-m2crypto'],
+                 'openssl', 'python-m2crypto', 'python-setuptools'],
         'pips': ['docker'],
-        'kubernetes_base_path': '/etc/kubernetes',
+        'kubernetes_base_path': '/srv/kubernetes',
         'manifests_path': '/etc/kubernetes/manifests',
-        'ca_key': '/etc/kubernetes/ca.key',
-        'ca_crt': '/etc/kubernetes/ca.crt',
-        'api_server_key': '/etc/kubernetes/api_server_key.key',
-        'api_server_crt': '/etc/kubernetes/api_server_crt.key'
+        'ca_key': '/srv/kubernetes/ca.key',
+        'ca_crt': '/srv/kubernetes/ca.crt',
+        'api_server_key': '/srv/kubernetes/api_server.key',
+        'api_server_crt': '/srv/kubernetes/api_server.crt'
     },
 }, merge=salt['pillar.get']('kubernetes:common')) %}

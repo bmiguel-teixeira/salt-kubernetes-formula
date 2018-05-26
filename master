@@ -6,3 +6,8 @@ file_roots:
 pillar_roots:
   base:
     - /srv/salt/base/pillars
+
+module_dirs:
+  - /srv/salt/ext
+
+file_recv: true

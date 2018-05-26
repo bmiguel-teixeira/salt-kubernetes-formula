@@ -1,3 +1,4 @@
+{%- from "kubernetes/map.jinja" import common with context %}
 apiVersion: "v1"
 kind: "Pod"
 metadata:
@@ -10,7 +11,7 @@ spec:
   hostNetwork: true
   containers:
     - name: "kube-scheduler"
-      image: "gcr.io/google-containers/hyperkube:v1.10.0"
+      image: "{{image}}"
       command:
         - "/hyperkube"
         - "scheduler"
@@ -19,13 +20,13 @@ spec:
         - "--v=2"
       volumeMounts:
         - name: "srv-kubernetes"
-          mountPath: "/srv/kubernetes"
+          mountPath: "{{common.kubernetes_base_path}}"
         - name: "var-lib-kubelet"
           mountPath: "/var/lib/kubelet"
   volumes:
     - name: "srv-kubernetes"
       hostPath:
-        path: "/srv/kubernetes"
+        path: "{{common.kubernetes_base_path}}"
     - name: "var-lib-kubelet"
       hostPath:
         path: "/var/lib/kubelet"

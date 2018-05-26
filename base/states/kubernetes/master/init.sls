@@ -1,3 +1,5 @@
 include:
-- kubernetes.master
-- kubernetes.node
+- kubernetes.common
+- kubernetes.master.kubectl
+- kubernetes.master.kubelet
+- kubernetes.master.manifests

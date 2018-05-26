@@ -4,6 +4,6 @@ base.packages:
   pkg.installed:
     - pkgs: {{ common.pkgs }}
 
-base.pips:
-  pip.installed:
-    - names: {{ common.pips}}
+#base.pips:
+#  pip.installed:
+#    - names: {{ common.pips}}

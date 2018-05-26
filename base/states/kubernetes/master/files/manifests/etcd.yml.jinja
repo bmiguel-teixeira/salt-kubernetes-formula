@@ -1,3 +1,4 @@
+{%- from "kubernetes/map.jinja" import common with context %}
 apiVersion: "v1"
 kind: "Pod"
 metadata:
@@ -11,12 +12,12 @@ spec:
       image: "quay.io/coreos/etcd:v3.1.0"
       command: 
         - "/usr/local/bin/etcd"
-        - "--advertise-client-urls=http://192.168.1.76:2379"
+        - "--advertise-client-urls=http://{{common.cluster_dns}}:2379"
         - "--listen-client-urls=http://0.0.0.0:2379"
         - "--listen-peer-urls=http://0.0.0.0:2380"
       livenessProbe:
        httpGet:
-        host: 192.168.1.76
+        host: {{common.cluster_dns}}
         path: /health
         port: 2379
         scheme: HTTP

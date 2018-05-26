@@ -2,51 +2,36 @@
 {%- set worker_nodes = pillar['kubernetes']['nodes']['minions'] %}
 {%- set all_workers = (master_nodes + worker_nodes) | join(',') %}
 
-# Inital HealthCheck
-health.check:
-  salt.function:
-    - name: test.ping
-    - tgt: L@{{all_workers}}
-    - tgt_type: compound
-
-# Install base packages 
-base.packages:
+setup.root_ca:
   salt.state:
-    - sls: kubernetes.common.base
-    - tgt: L@{{all_workers}}
-    - tgt_type: compound
+    - sls: kubernetes.certificates.certificates_root
+    - tgt: {{master_nodes[0]}}
 
-# Install docker 
-docker.engine:
-  salt.state:
-    - sls: kubernetes.common.docker
-    - tgt: L@{{all_workers}}
-    - tgt_type: compound
+copy_ca_key:
+  cmd.run:
+    - name: 'salt-cp {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/srv/kubernetes/ca.key /srv/kubernetes'
 
-#Download Images
-download.packages:
-  salt.state:
-    - sls: kubernetes.common.kub_image
-    - tgt: L@{{all_workers}}
-    - tgt_type: compound
+copy_ca_crt:
+  cmd.run:
+    - name: 'salt-cp {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/srv/kubernetes/ca.crt /srv/kubernetes'
 
 #Generate certs
 generate.certificates:
   salt.state:
-    - sls: kubernetes.common.certificates
+    - sls: kubernetes.certificates.certificates
     - tgt: L@{{all_workers}}
     - tgt_type: compound
 
-#Download Images
-setup.kubectl:
+
+# Provision master nodes
+#master_nodes:
+#  salt.state:
+#    - sls: kubernetes.master
+#    - tgt: {{master_nodes | join(',')}}
+
+#Generate certs
+worker_nodes:
   salt.state:
-    - sls: kubernetes.master.base
-    - tgt: {{master_nodes | join(',')}}
-
-
-#Download Images
-setup.kubeket:
-  salt.state:
-    - sls: kubernetes.master.kubelet
-    - tgt: {{master_nodes | join(',')}}
-
+    - sls: kubernetes.node
+    - tgt: L@{{worker_nodes| join(',')}}
+    - tgt_type: compound

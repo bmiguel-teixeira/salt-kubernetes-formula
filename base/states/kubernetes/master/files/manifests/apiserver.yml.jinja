@@ -1,3 +1,4 @@
+{%- from "kubernetes/map.jinja" import common with context %}
 apiVersion: "v1"
 kind: "Pod"
 metadata:
@@ -10,7 +11,7 @@ spec:
   hostNetwork: true
   containers:
     - name: "kube-apiserver"
-      image: "gcr.io/google-containers/hyperkube:v1.10.0"
+      image: "{{image}}"
       command:
         - "/hyperkube"
         - "apiserver"
@@ -19,26 +20,26 @@ spec:
         - "--allow-privileged"
         - "--insecure-port=8080"
         - "--secure-port=443"
-        - "--service-cluster-ip-range=192.168.1.76/16"
+        - "--service-cluster-ip-range=10.0.100.0/16"
         - "--etcd-servers=http://127.0.0.1:2379"
         - "--etcd-quorum-read=true"
-        - "--advertise-address=192.168.1.76"
-        - "--tls-cert-file=/srv/kubernetes/server.crt"
-        - "--tls-private-key-file=/srv/kubernetes/server.key"
-        - "--client-ca-file=/srv/kubernetes/ca.crt"
-        - "--service-account-key-file=/srv/kubernetes/server.key"
+        - "--advertise-address={{common.cluster_dns}}"
+        - "--tls-cert-file={{common.api_server_crt}}"
+        - "--tls-private-key-file={{common.api_server_key}}"
+        - "--client-ca-file={{common.ca_crt}}"
+        - "--service-account-key-file={{common.api_server_key}}"
         - "--service-node-port-range=9000-10000"
         - "--storage-backend=etcd3"
         - "--v=4"
       volumeMounts:
         - name: "etc-kubernetes"
-          mountPath: "/srv/kubernetes"
+          mountPath: "{{common.kubernetes_base_path}}"
         - name: "var-lib-kubelet"
           mountPath: "/var/lib/kubelet"
   volumes:
     - name: "etc-kubernetes"
       hostPath:
-        path: "/srv/kubernetes"
+        path: "{{common.kubernetes_base_path}}"
     - name: "var-lib-kubelet"
       hostPath:
         path: "/var/lib/kubelet"

@@ -1,3 +1,4 @@
+{%- from "kubernetes/map.jinja" import common with context %}
 apiVersion: "v1"
 kind: "Pod"
 metadata:
@@ -10,18 +11,18 @@ spec:
   hostNetwork: true
   containers:
     - name: "kube-controller-manager"
-      image: "gcr.io/google-containers/hyperkube:v1.10.0"
+      image: "{{image}}"
       command:
         - "/hyperkube"
         - "controller-manager"
         - "--kubeconfig=/var/lib/kubelet/kubeconfig"
         - "--allocate-node-cidrs=True"
-        - "--cluster-cidr=10.244.0.0/16"
-        - "--cluster-name=kbl-ateam"
-        - "--root-ca-file=/srv/kubernetes/ca.crt"
-        - "--cluster-signing-cert-file=/srv/kubernetes/ca.crt"
-        - "--cluster-signing-key-file=/srv/kubernetes/ca.key"
-        - "--service-account-private-key-file=/srv/kubernetes/server.key"
+        - "--cluster-cidr={{common.cluster_cidr}}"
+        - "--cluster-name={{common.cluster_name}}"
+        - "--root-ca-file={{common.ca_crt}}"
+        - "--cluster-signing-cert-file={{common.ca_crt}}"
+        - "--cluster-signing-key-file={{common.ca_key}}"
+        - "--service-account-private-key-file={{common.api_server_key}}"
         - "--leader-elect=true"
         - "--v=2"
         - "--node-monitor-grace-period=40s"
@@ -30,13 +31,13 @@ spec:
         - "--master=127.0.0.1:8080"
       volumeMounts:
         - name: "srv-kubernetes"
-          mountPath: "/srv/kubernetes"
+          mountPath: "{{common.kubernetes_base_path}}"
         - name: "var-lib-kubelet"
           mountPath: "/var/lib/kubelet"
   volumes:
     - name: "srv-kubernetes"
       hostPath:
-        path: "/srv/kubernetes"
+        path: "{{common.kubernetes_base_path}}"
     - name: "var-lib-kubelet"
       hostPath:
         path: "/var/lib/kubelet"

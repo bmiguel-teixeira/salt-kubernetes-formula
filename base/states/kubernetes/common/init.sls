@@ -1,3 +1,4 @@
 include:
-- docker
-- kub_image
+  - kubernetes.common.standard
+  - kubernetes.common.docker
+  - kubernetes.common.images

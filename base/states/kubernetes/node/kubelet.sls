@@ -36,6 +36,7 @@ clean:
 start.kubelet:
   cmd.run:
     - name: "docker run \
+    --volume=/sys:/sys:ro \
     --volume=/var/lib/docker/:/var/lib/docker:rw \
     --volume=/var/lib/kubelet/:/var/lib/kubelet:rw \
     --volume=/var/run:/var/run:rw \

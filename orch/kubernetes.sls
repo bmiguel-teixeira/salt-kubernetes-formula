@@ -9,11 +9,11 @@ setup.root_ca:
 
 copy_ca_key:
   cmd.run:
-    - name: 'salt-cp {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/srv/kubernetes/ca.key /srv/kubernetes'
+    - name: 'salt-cp --list {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/srv/kubernetes/ca.key /srv/kubernetes'
 
 copy_ca_crt:
   cmd.run:
-    - name: 'salt-cp {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/srv/kubernetes/ca.crt /srv/kubernetes'
+    - name: 'salt-cp --list {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/srv/kubernetes/ca.crt /srv/kubernetes'
 
 #Generate certs
 generate.certificates:
@@ -24,10 +24,11 @@ generate.certificates:
 
 
 # Provision master nodes
-#master_nodes:
-#  salt.state:
-#    - sls: kubernetes.master
-#    - tgt: {{master_nodes | join(',')}}
+master_nodes:
+  salt.state:
+    - sls: kubernetes.master
+    - tgt: L@{{master_nodes | join(',')}}
+    - tgt_type: compound
 
 #Generate certs
 worker_nodes:

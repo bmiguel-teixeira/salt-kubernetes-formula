@@ -2,7 +2,7 @@
 
 dummy.working.dir:
   file.directory:
-    - name: {{common.kubernetes_base_path}}
+    - name: {{common.certs_path}}
 
 generate_ca_private_key:
   cmd.run:

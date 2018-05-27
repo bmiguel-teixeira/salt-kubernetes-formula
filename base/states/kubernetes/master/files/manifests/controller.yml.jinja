@@ -15,14 +15,14 @@ spec:
       command:
         - "/hyperkube"
         - "controller-manager"
-        - "--kubeconfig=/var/lib/kubelet/controller.kubeconfig"
+        - "--kubeconfig=/var/lib/kubernetes/controller.kubeconfig"
         - "--allocate-node-cidrs=True"
         - "--cluster-cidr={{common.cluster_cidr}}"
         - "--cluster-name={{common.cluster_name}}"
         - "--root-ca-file={{common.ca_crt}}"
         - "--cluster-signing-cert-file={{common.ca_crt}}"
         - "--cluster-signing-key-file={{common.ca_key}}"
-        - "--service-account-private-key-file={{common.api_server_key}}"
+        - "--service-account-private-key-file=/var/lib/kubernetes/sa.key"
         - "--leader-elect=true"
         - "--v=2"
         - "--node-monitor-grace-period=40s"
@@ -30,9 +30,14 @@ spec:
         - "--route-reconciliation-period=10s"
         - "--master=127.0.0.1:8080"
       volumeMounts:
+        - name: "srv-kubernetes"
+          mountPath: "{{common.certs_path}}"
         - name: "var-lib-kubelet"
-          mountPath: "/var/lib/kubelet"
+          mountPath: "/var/lib/kubernetes"
   volumes:
+    - name: "srv-kubernetes"
+      hostPath:
+        path: "{{common.certs_path}}"
     - name: "var-lib-kubelet"
       hostPath:
-        path: "{{common.kubernetes_base_path}}/controller"
+        path: "/var/lib/kubernetes"

@@ -5,16 +5,16 @@
 
 working.dir:
   file.directory:
-    - name: {{common.kubernetes_base_path}}
+    - name: {{common.certs_path}}
 
 generate_private_key:
   cmd.run:
-    - name: openssl genrsa -out {{common.kubernetes_base_path}}/{{kubelet_key}} 2048
-    #- unless: test -e {{common.kubernetes_base_path}}/{{kubelet_key}}
+    - name: openssl genrsa -out {{common.certs_path}}/{{kubelet_key}} 2048
+    #- unless: test -e {{common.certs_path}}/{{kubelet_key}}
 
 csr.conf:
   file.managed:
-    - name: {{common.kubernetes_base_path}}/csr.conf
+    - name: {{common.certs_path}}/csr.conf
     - source: salt://kubernetes/master/certificates/files/csr.conf.jinja
     - template: jinja
     - user: root
@@ -26,10 +26,10 @@ csr.conf:
 
 generate_request:
   cmd.run:
-    - name: openssl req -new -key {{common.kubernetes_base_path}}/{{kubelet_key}} -out {{common.kubernetes_base_path}}/server.csr -config {{common.kubernetes_base_path}}/csr.conf
-    #- unless: test -e {{common.kubernetes_base_path}}/server.csr
+    - name: openssl req -new -key {{common.certs_path}}/{{kubelet_key}} -out {{common.certs_path}}/server.csr -config {{common.certs_path}}/csr.conf
+    #- unless: test -e {{common.certs_path}}/server.csr
 
 generate_signed_crt:
   cmd.run:
-    - name: openssl x509 -req -in {{common.kubernetes_base_path}}/server.csr -CA {{common.ca_crt}} -CAkey {{common.ca_key}} -CAcreateserial -out {{common.kubernetes_base_path}}/{{kubelet_crt}} -days 10000 -extensions v3_ext -extfile {{common.kubernetes_base_path}}/csr.conf
-    #- unless: test -e {{common.kubernetes_base_path}}/{{kubelet_crt}}
+    - name: openssl x509 -req -in {{common.certs_path}}/server.csr -CA {{common.ca_crt}} -CAkey {{common.ca_key}} -CAcreateserial -out {{common.certs_path}}/{{kubelet_crt}} -days 10000 -extensions v3_ext -extfile {{common.certs_path}}/csr.conf
+    #- unless: test -e {{common.certs_path}}/{{kubelet_crt}}

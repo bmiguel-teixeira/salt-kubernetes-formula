@@ -4,8 +4,7 @@ kubernetes:
     minions:
       - KUBM
   nodes:
-    minions:
-      - kubl
+    minions: []
   common:
     cluster_name: kubcluster
     cluster_dns: 192.168.1.84

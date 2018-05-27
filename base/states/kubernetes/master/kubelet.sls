@@ -37,21 +37,21 @@ start.kubelet:
   cmd.run:
     - name: "docker run \
     --volume=/var/lib/docker/:/var/lib/docker:rw \
-    --volume={{common.kubernetes_base_path}}:/var/lib/kubelet:rw \
+    --volume={{common.config_path}}/:{{common.config_path}}/:rw \
     --volume=/var/run:/var/run:rw \
-    --volume={{common.manifests_path}}:/etc/kubernetes/manifests:rw \
+    --volume={{common.manifests_path}}/:{{common.manifests_path}}/:rw \
     --net=host \
     --privileged=true \
     --name=kubelet \
     -d \
     {{common.docker_binaries}}:{{common.version}} \
     /hyperkube kubelet \
-            --kubeconfig=/var/lib/kubelet/kubelet.kubeconfig \
+            --kubeconfig={{common.config_path}}/kubelet.kubeconfig \
             --address=0.0.0.0 \
             --allow-privileged=true \
             --enable-server \
             --enable-debugging-handlers \
-            --pod-manifest-path=/etc/kubernetes/manifests \
+            --pod-manifest-path={{common.manifests_path}}/ \
             --register-schedulable={{schedulable}} \
             --node-labels=role=master \
             --network-plugin=kubenet \

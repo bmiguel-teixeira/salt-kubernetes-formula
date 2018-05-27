@@ -1,0 +1,29 @@
+rm -rf /etc/kubernetes
+
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)
+
+
+
+
+
+openssl x509 -noout -modulus -in admin.crt | openssl md5 && \
+openssl rsa -noout -modulus -in admin.key | openssl md5
+
+
+
+openssl x509 -noout -modulus -in sa.crt | openssl md5 && \
+openssl rsa -noout -modulus -in sa.key | openssl md5
+
+
+
+
+
+
+kubectl run hello-node --image=tutum/hello-world --port=8080
+kubectl delete deployments hello-node
+
+
+
+kubectl -n=kube-system expose deployment kubernetes-dashboard --type=NodePort --name=kubs
+kubectl delete services kubs

@@ -10,7 +10,7 @@ admin.working.dir:
 admin.generate_private_key:
   cmd.run:
     - name: openssl genrsa -out {{common.certs_path}}/{{admin_key}} 2048
-    - unless: test -e {{common.certs_path}}/{{admin_key}}
+    # - unless: test -e {{common.certs_path}}/{{admin_key}}
 
 admin.csr.conf:
   file.managed:
@@ -27,9 +27,9 @@ admin.csr.conf:
 admin.generate_request:
   cmd.run:
     - name: openssl req -new -key {{common.certs_path}}/{{admin_key}} -out {{common.certs_path}}/server.csr -config {{common.certs_path}}/csr.conf
-    - unless: test -e {{common.certs_path}}/server.csr
+    # - unless: test -e {{common.certs_path}}/server.csr
 
 admin.generate_signed_crt:
   cmd.run:
     - name: openssl x509 -req -in {{common.certs_path}}/server.csr -CA {{common.ca_crt}} -CAkey {{common.ca_key}} -CAcreateserial -out {{common.certs_path}}/{{admin_crt}} -days 10000 -extensions v3_ext -extfile {{common.certs_path}}/csr.conf
-    - unless: test -e {{common.certs_path}}/{{admin_crt}}
+    # - unless: test -e {{common.certs_path}}/{{admin_crt}}

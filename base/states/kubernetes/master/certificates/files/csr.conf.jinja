@@ -1,4 +1,6 @@
-{%- from "kubernetes/map.jinja" import common with context %}
+{%- set node = grains.get('nodename')  %}
+{%- set internal_ip = grains.get('ipv4')[-1] %}
+{%- set external_ip = grains.get('ipv4')[1]  %}
 [ req ]
 default_bits = 2048
 prompt = no
@@ -10,16 +12,17 @@ distinguished_name = dn
 C = pt
 ST = porto
 L = lionesa
-O = ff
+O = {{O}}
 OU = ff
-CN = {{common.cluster_dns}}
+CN = {{CN}}
 
 [ req_ext ]
 subjectAltName = @alt_names
 
 [ alt_names ]
-DNS.1 = kubernetes
-IP.1 = {{common.cluster_dns}}
+DNS.1 = {{node}}
+IP.1 = {{internal_ip}}
+IP.2 = {{external_ip}}
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always
@@ -27,4 +30,3 @@ basicConstraints=CA:FALSE
 keyUsage=keyEncipherment,dataEncipherment
 extendedKeyUsage=serverAuth,clientAuth
 subjectAltName=@alt_names
-

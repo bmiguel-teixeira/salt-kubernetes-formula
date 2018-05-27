@@ -37,7 +37,7 @@ start.kubelet:
   cmd.run:
     - name: "docker run \
     --volume=/var/lib/docker/:/var/lib/docker:rw \
-    --volume=/var/lib/kubelet/:/var/lib/kubelet:rw \
+    --volume={{common.kubernetes_base_path}}:/var/lib/kubelet:rw \
     --volume=/var/run:/var/run:rw \
     --volume={{common.manifests_path}}:/etc/kubernetes/manifests:rw \
     --net=host \
@@ -46,7 +46,7 @@ start.kubelet:
     -d \
     {{common.docker_binaries}}:{{common.version}} \
     /hyperkube kubelet \
-            --kubeconfig=/var/lib/kubelet/kubeconfig \
+            --kubeconfig=/var/lib/kubelet/kubelet.kubeconfig \
             --address=0.0.0.0 \
             --allow-privileged=true \
             --enable-server \

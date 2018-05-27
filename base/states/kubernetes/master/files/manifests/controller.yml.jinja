@@ -15,7 +15,7 @@ spec:
       command:
         - "/hyperkube"
         - "controller-manager"
-        - "--kubeconfig=/var/lib/kubelet/kubeconfig"
+        - "--kubeconfig=/var/lib/kubelet/controller.kubeconfig"
         - "--allocate-node-cidrs=True"
         - "--cluster-cidr={{common.cluster_cidr}}"
         - "--cluster-name={{common.cluster_name}}"
@@ -30,14 +30,9 @@ spec:
         - "--route-reconciliation-period=10s"
         - "--master=127.0.0.1:8080"
       volumeMounts:
-        - name: "srv-kubernetes"
-          mountPath: "{{common.kubernetes_base_path}}"
         - name: "var-lib-kubelet"
           mountPath: "/var/lib/kubelet"
   volumes:
-    - name: "srv-kubernetes"
-      hostPath:
-        path: "{{common.kubernetes_base_path}}"
     - name: "var-lib-kubelet"
       hostPath:
-        path: "/var/lib/kubelet"
+        path: "{{common.kubernetes_base_path}}/controller"

@@ -11,7 +11,7 @@ generate_ca_private_key:
 
 generate_ca_certificate:
   cmd.run:
-    - name: openssl req -x509 -new -nodes -key {{common.ca_key}} -subj "/CN={{common.cluster_dns}}" -days 10000 -out {{common.ca_crt}}
+    - name: openssl req -x509 -new -nodes -key {{common.ca_key}} -subj "/CN={{common.cluster_name}}" -days 10000 -out {{common.ca_crt}}
     - unless: test -e {{common.ca_crt}}
 
 copy.ca_key:

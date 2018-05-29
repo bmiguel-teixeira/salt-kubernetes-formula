@@ -1,8 +1,10 @@
 {%- from "kubernetes/map.jinja" import common with context %}
 
-dummy.working.dir:
+certs_path.working.dir:
   file.directory:
     - name: {{common.certs_path}}
+    - group: root
+    - dir_mode: 755
 
 generate_ca_private_key:
   cmd.run:

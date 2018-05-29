@@ -1,4 +1,6 @@
 {%- from "kubernetes/map.jinja" import common with context %}
+{%- set internal_ip = grains.get('ipv4')[0] %}
+
 apiVersion: "v1"
 kind: "Pod"
 metadata:
@@ -24,11 +26,12 @@ spec:
         - "--cluster-signing-key-file={{common.certs_path}}/ca.key"
         - "--service-account-private-key-file={{common.certs_path}}/sa.key"
         - "--leader-elect=true"
-        - "--v=2"
         - "--node-monitor-grace-period=40s"
         - "--pod-eviction-timeout=5m0s"
         - "--route-reconciliation-period=10s"
-        - "--master=127.0.0.1:8080"
+        - "--master=https://{{internal_ip}}"
+        - "--use-service-account-credentials=true"
+        - "--v=2"
       volumeMounts:
         - name: "etc-kubernetes-certs"
           mountPath: "{{common.certs_path}}"

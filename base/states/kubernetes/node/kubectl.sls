@@ -11,15 +11,15 @@ kubectl.package:
 kubelet.config:
   cmd.run:
     - names: 
-      - kubectl config set-cluster {{common.cluster_name}} --certificate-authority={{common.ca_crt}} --embed-certs=true --server=https://{{common.cluster_dns}} --kubeconfig={{common.kubernetes_base_path}}/{{node}}.kubeconfig
-      - kubectl config set-credentials system:node:{{node}} --client-certificate={{common.kubernetes_base_path}}/kubelet.crt --client-key={{common.kubernetes_base_path}}/kubelet.key  --embed-certs=true --kubeconfig={{common.kubernetes_base_path}}/{{node}}.kubeconfig
-      - kubectl config set-context default --cluster={{common.cluster_name}} --user=system:node:{{node}} --kubeconfig={{common.kubernetes_base_path}}/{{node}}.kubeconfig
-      - kubectl config use-context default --kubeconfig={{common.kubernetes_base_path}}/{{node}}.kubeconfig
+      - kubectl config set-cluster {{common.cluster_name}} --certificate-authority={{common.ca_crt}} --embed-certs=true --server=https://{{common.cluster_dns}} --kubeconfig={{common.config_path}}/{{node}}.kubeconfig
+      - kubectl config set-credentials system:node:{{node}} --client-certificate={{common.certs_path}}/kubelet.crt --client-key={{common.certs_path}}/kubelet.key  --embed-certs=true --kubeconfig={{common.config_path}}/{{node}}.kubeconfig
+      - kubectl config set-context default --cluster={{common.cluster_name}} --user=system:node:{{node}} --kubeconfig={{common.config_path}}/{{node}}.kubeconfig
+      - kubectl config use-context default --kubeconfig={{common.config_path}}/{{node}}.kubeconfig
 
-proxy.config:
-  cmd.run:
-    - names: 
-      - kubectl config set-cluster {{common.cluster_name}} --certificate-authority={{common.ca_crt}} --embed-certs=true --server=https://{{common.cluster_dns}} --kubeconfig={{common.kubernetes_base_path}}/{{node}}.kubeconfig
-      - kubectl config set-credentials system:node:{{node}} --client-certificate={{common.kubernetes_base_path}}/kubelet.crt --client-key={{common.kubernetes_base_path}}/kubelet.key  --embed-certs=true --kubeconfig={{common.kubernetes_base_path}}/{{node}}.kubeconfig
-      - kubectl config set-context default --cluster={{common.cluster_name}} --user=system:node:{{node}} --kubeconfig={{common.kubernetes_base_path}}/{{node}}.kubeconfig
-      - kubectl config use-context default --kubeconfig={{common.kubernetes_base_path}}/{{node}}.kubeconfig
+#proxy.config:
+#  cmd.run:
+#    - names: 
+#      - kubectl config set-cluster {{common.cluster_name}} --certificate-authority={{common.ca_crt}} --embed-certs=true --server=https://{{common.cluster_dns}} --kubeconfig={{common.config_path}}/{{node}}.kubeconfig
+#      - kubectl config set-credentials system:node:{{node}} --client-certificate={{common.config_path}}/kubelet.crt --client-key={{common.config_path}}/kubelet.key  --embed-certs=true --kubeconfig={{common.config_path}}/{{node}}.kubeconfig
+#      - kubectl config set-context default --cluster={{common.cluster_name}} --user=system:node:{{node}} --kubeconfig={{common.config_path}}/{{node}}.kubeconfig
+#      - kubectl config use-context default --kubeconfig={{common.config_path}}/{{node}}.kubeconfig

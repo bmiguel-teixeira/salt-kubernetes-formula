@@ -1,5 +1,5 @@
 {%- from "kubernetes/map.jinja" import common with context %}
-{%- set node = grains.get('nodename')  %}
+{%- set nodename = grains.get('nodename')  %}
 {%- set kubelet_key = 'kubelet.key'  %}
 {%- set kubelet_crt = 'kubelet.crt'  %}
 
@@ -22,7 +22,7 @@ csr.conf:
     - mode: 644
     - defaults:
       O: system:nodes
-      CN: system:node:{{node}}
+      CN: system:node:{{nodename}}
 
 generate_request:
   cmd.run:

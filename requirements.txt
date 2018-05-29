@@ -1,1 +1,24 @@
 m2crypto
+
+
+controller.svc:
+  file.managed:
+    - name: {{common.manifests_path}}/controller.yml
+    - source: salt://kubernetes/master/files/manifests/controller.yml.jinja
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: 644
+    - defaults:
+        image: {{common.docker_binaries}}:{{common.version}}
+
+scheduler.svc:
+  file.managed:
+    - name: {{common.manifests_path}}/scheduler.yml
+    - source: salt://kubernetes/master/files/manifests/scheduler.yml.jinja
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: 644
+    - defaults:
+        image: {{common.docker_binaries}}:{{common.version}}

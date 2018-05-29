@@ -15,13 +15,12 @@ scheduler.generate_private_key:
 scheduler.csr.conf:
   file.managed:
     - name: {{common.certs_path}}/csr.conf
-    - source: salt://kubernetes/master/certificates/files/csr.conf.jinja
+    - source: salt://kubernetes/common/files/csr.conf.jinja
     - template: jinja
     - user: root
     - group: root
     - mode: 644
     - defaults:
-      O: system:kube-scheduler
       CN: system:kube-scheduler
 
 scheduler.generate_request:

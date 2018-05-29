@@ -1,6 +1,7 @@
 {%- from "kubernetes/map.jinja" import common with context %}
 {%- set schedulable = salt.pillar.get('kubernetes:masters:schedulable') %}
 {%- set cluster_dns = salt.pillar.get('kubernetes:common:cluster_dns')  %}
+{%- set nodename = grains.get('nodename')  %}
 
 #start.kubelet:
 #  docker_container.running:
@@ -36,11 +37,11 @@ clean:
 start.kubelet:
   cmd.run:
     - name: "docker run \
-    --volume=/sys:/sys:ro \
     --volume=/var/lib/docker/:/var/lib/docker:rw \
     --volume=/var/lib/kubelet/:/var/lib/kubelet:rw \
+    --volume={{common.config_path}}/:{{common.config_path}}/:rw \
     --volume=/var/run:/var/run:rw \
-    --volume={{common.manifests_path}}:/etc/kubernetes/manifests:rw \
+    --volume={{common.manifests_path}}/:{{common.manifests_path}}/:rw \
     --net=host \
     --pid=host \
     --privileged=true \
@@ -48,15 +49,17 @@ start.kubelet:
     -d \
     {{common.docker_binaries}}:{{common.version}} \
     /hyperkube kubelet \
-            --kubeconfig=/var/lib/kubelet/kubeconfig \
+            --kubeconfig={{common.config_path}}/{{nodename}}.kubeconfig \
             --address=0.0.0.0 \
             --allow-privileged=true \
             --enable-server \
             --enable-debugging-handlers \
-            --pod-manifest-path=/etc/kubernetes/manifests \
+            --pod-manifest-path={{common.manifests_path}} \
             --register-schedulable=true \
             --node-labels=role=node \
             --network-plugin=kubenet \
             --node-status-update-frequency=10s \
             --v=2 \
-            --non-masquerade-cidr={{common.cluster_cidr}}"
+            --non-masquerade-cidr={{common.cluster_cidr}} \
+            --runtime-cgroups=/systemd/system.slice \
+            --kubelet-cgroups=/systemd/system.slice "

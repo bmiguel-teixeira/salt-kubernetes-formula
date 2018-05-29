@@ -2,6 +2,18 @@
 {%- set worker_nodes = pillar['kubernetes']['nodes']['minions'] %}
 {%- set all_workers = (master_nodes + worker_nodes) | join(',') %}
 
+base.sync:
+  salt.function:
+    - name: saltutil.sync_all
+    - tgt: L@{{all_workers}}
+    - tgt_type: compound
+
+common.state:
+  salt.state:
+    - sls: kubernetes.common
+    - tgt: L@{{all_workers}}
+    - tgt_type: compound
+
 setup.root_ca:
   salt.state:
     - sls: kubernetes.root_certificate
@@ -23,8 +35,8 @@ master_nodes:
     - tgt_type: compound
 
 #Generate certs
-#worker_nodes:
-#  salt.state:
-#    - sls: kubernetes.node
-#    - tgt: L@{{worker_nodes| join(',')}}
-#    - tgt_type: compound
+worker_nodes:
+  salt.state:
+    - sls: kubernetes.node
+    - tgt: L@{{worker_nodes| join(',')}}
+    - tgt_type: compound

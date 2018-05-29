@@ -2,13 +2,18 @@ kubernetes:
   masters:
     schedulable: false
     minions:
-      - KUBM
+      - kubm1
+      - kubm2
   nodes:
-    minions: []
+    minions:
+      - kubl1
+      - kubl2
+      - kubl3
+      - kubl4
   common:
     cluster_name: kubcluster
-    cluster_dns: 192.168.1.84
+    cluster_dns: kubm1
     cluster_cidr: 10.100.0.0/16
-    version: v1.10.0
+    version: v1.10.3
     docker_binaries: gcr.io/google-containers/hyperkube
     

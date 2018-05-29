@@ -15,13 +15,12 @@ controller.generate_private_key:
 controller.csr.conf:
   file.managed:
     - name: {{common.certs_path}}/csr.conf
-    - source: salt://kubernetes/master/certificates/files/csr.conf.jinja
+    - source: salt://kubernetes/common/files/csr.conf.jinja
     - template: jinja
     - user: root
     - group: root
     - mode: 644
     - defaults:
-      O: system:kube-controller-manager
       CN: system:kube-controller-manager
 
 controller.generate_request:

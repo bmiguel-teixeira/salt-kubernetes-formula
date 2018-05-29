@@ -15,7 +15,7 @@ sa.generate_private_key:
 sa.csr.conf:
   file.managed:
     - name: {{common.certs_path}}/csr.conf
-    - source: salt://kubernetes/master/certificates/files/csr.conf.jinja
+    - source: salt://kubernetes/common/files/csr.conf.jinja
     - template: jinja
     - user: root
     - group: root

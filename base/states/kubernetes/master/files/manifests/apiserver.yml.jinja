@@ -1,4 +1,6 @@
 {%- from "kubernetes/map.jinja" import common with context %}
+{%- set internal_ip = grains.get('ipv4')[0] %}
+
 apiVersion: "v1"
 kind: "Pod"
 metadata:
@@ -22,9 +24,11 @@ spec:
         - "--insecure-port=8080"
         - "--secure-port=443"
         - "--service-cluster-ip-range=10.0.100.0/16"
-        - "--etcd-servers=http://127.0.0.1:2379"
-        - "--etcd-quorum-read=true"
-        - "--advertise-address={{common.cluster_dns}}"
+        - "--etcd-cafile=/etc/kubernetes/certs/ca.crt"
+        - "--etcd-certfile=/etc/kubernetes/certs/api.crt"
+        - "--etcd-keyfile=/etc/kubernetes/certs/api.key"
+        - "--etcd-servers=https://10.0.1.4:2379,https://10.0.1.5:2379"
+        - "--advertise-address={{internal_ip}}"
         - "--tls-cert-file=/etc/kubernetes/certs/api.crt"
         - "--tls-private-key-file=/etc/kubernetes/certs/api.key"
         - "--client-ca-file=/etc/kubernetes/certs/ca.crt"

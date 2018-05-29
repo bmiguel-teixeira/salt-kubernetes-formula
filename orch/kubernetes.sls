@@ -2,6 +2,7 @@
 {%- set worker_nodes = pillar['kubernetes']['nodes']['minions'] %}
 {%- set all_workers = (master_nodes + worker_nodes) | join(',') %}
 
+
 base.sync:
   salt.function:
     - name: saltutil.sync_all

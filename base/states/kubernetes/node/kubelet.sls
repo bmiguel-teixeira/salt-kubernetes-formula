@@ -38,7 +38,7 @@ start.kubelet:
   cmd.run:
     - name: "docker run \
     --volume=/var/lib/docker/:/var/lib/docker:rw \
-    --volume=/var/lib/kubelet/:/var/lib/kubelet:rw \
+    --volume=/var/lib/kubelet/:/var/lib/kubelet:rw,shared \
     --volume={{common.config_path}}/:{{common.config_path}}/:rw \
     --volume=/var/run:/var/run:rw \
     --volume={{common.manifests_path}}/:{{common.manifests_path}}/:rw \

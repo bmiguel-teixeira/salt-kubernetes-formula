@@ -12,7 +12,7 @@ kubernetes:
       - kubl4
   common:
     cluster_name: kubcluster
-    cluster_dns: kubm1
+    cluster_dns: 10.0.1.5
     cluster_cidr: 10.100.0.0/16
     version: v1.10.3
     docker_binaries: gcr.io/google-containers/hyperkube

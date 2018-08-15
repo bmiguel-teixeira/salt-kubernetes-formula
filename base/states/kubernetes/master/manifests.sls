@@ -8,6 +8,10 @@ etcd.svc:
     - user: root
     - group: root
     - mode: 644
+    - defaults:
+        controllers:
+          - kubm1=https://10.0.1.5:2380
+          - kubm2=https://10.0.1.4:2380
 
 api.svc:
   file.managed:

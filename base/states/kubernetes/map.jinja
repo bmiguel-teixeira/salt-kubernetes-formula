@@ -5,11 +5,11 @@
                  'python-pip', 'curl', 'git', 'apt-transport-https', 
                  'openssl', 'python-m2crypto', 'python-setuptools'],
         'pips': ['docker'],
-        'kubernetes_base_path': '/srv/kubernetes',
+        'base_path': '/etc/kubernetes',
+        'certs_path': '/etc/kubernetes/certs',
         'manifests_path': '/etc/kubernetes/manifests',
-        'ca_key': '/srv/kubernetes/ca.key',
-        'ca_crt': '/srv/kubernetes/ca.crt',
-        'api_server_key': '/srv/kubernetes/api_server.key',
-        'api_server_crt': '/srv/kubernetes/api_server.crt'
+        'config_path': '/etc/kubernetes/configs',
+        'ca_key': '/etc/kubernetes/certs/ca.key',
+        'ca_crt': '/etc/kubernetes/certs/ca.crt',
     },
 }, merge=salt['pillar.get']('kubernetes:common')) %}

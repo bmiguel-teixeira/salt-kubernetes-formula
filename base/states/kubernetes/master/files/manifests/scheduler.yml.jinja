@@ -15,18 +15,18 @@ spec:
       command:
         - "/hyperkube"
         - "scheduler"
-        - "--kubeconfig=/var/lib/kubelet/kubeconfig"
+        - "--kubeconfig={{common.config_path}}/scheduler.kubeconfig"
         - "--leader-elect=true"
         - "--v=2"
       volumeMounts:
-        - name: "srv-kubernetes"
-          mountPath: "{{common.kubernetes_base_path}}"
+        - name: "etc-kubernetes-config"
+          mountPath: "{{common.config_path}}"
         - name: "var-lib-kubelet"
           mountPath: "/var/lib/kubelet"
   volumes:
-    - name: "srv-kubernetes"
+    - name: "etc-kubernetes-config"
       hostPath:
-        path: "{{common.kubernetes_base_path}}"
+        path: "{{common.config_path}}"
     - name: "var-lib-kubelet"
       hostPath:
         path: "/var/lib/kubelet"

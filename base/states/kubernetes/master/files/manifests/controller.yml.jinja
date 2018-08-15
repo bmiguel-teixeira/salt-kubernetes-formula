@@ -1,4 +1,6 @@
 {%- from "kubernetes/map.jinja" import common with context %}
+{%- set internal_ip = grains.get('ipv4')[0] %}
+
 apiVersion: "v1"
 kind: "Pod"
 metadata:
@@ -15,29 +17,35 @@ spec:
       command:
         - "/hyperkube"
         - "controller-manager"
-        - "--kubeconfig=/var/lib/kubelet/kubeconfig"
+        - "--kubeconfig={{common.config_path}}/controller.kubeconfig"
         - "--allocate-node-cidrs=True"
         - "--cluster-cidr={{common.cluster_cidr}}"
         - "--cluster-name={{common.cluster_name}}"
-        - "--root-ca-file={{common.ca_crt}}"
-        - "--cluster-signing-cert-file={{common.ca_crt}}"
-        - "--cluster-signing-key-file={{common.ca_key}}"
-        - "--service-account-private-key-file={{common.api_server_key}}"
+        - "--root-ca-file={{common.certs_path}}/ca.crt"
+        - "--cluster-signing-cert-file={{common.certs_path}}/ca.crt"
+        - "--cluster-signing-key-file={{common.certs_path}}/ca.key"
+        - "--service-account-private-key-file={{common.certs_path}}/sa.key"
         - "--leader-elect=true"
-        - "--v=2"
         - "--node-monitor-grace-period=40s"
         - "--pod-eviction-timeout=5m0s"
         - "--route-reconciliation-period=10s"
-        - "--master=127.0.0.1:8080"
+        - "--master=https://{{internal_ip}}"
+        - "--use-service-account-credentials=true"
+        - "--v=2"
       volumeMounts:
-        - name: "srv-kubernetes"
-          mountPath: "{{common.kubernetes_base_path}}"
+        - name: "etc-kubernetes-certs"
+          mountPath: "{{common.certs_path}}"
+        - name: "etc-kubernetes-config"
+          mountPath: "{{common.config_path}}"
         - name: "var-lib-kubelet"
-          mountPath: "/var/lib/kubelet"
+          mountPath: "/var/lib/kubernetes"
   volumes:
-    - name: "srv-kubernetes"
+    - name: "etc-kubernetes-certs"
       hostPath:
-        path: "{{common.kubernetes_base_path}}"
+        path: "{{common.certs_path}}"
+    - name: "etc-kubernetes-config"
+      hostPath:
+        path: "{{common.config_path}}"
     - name: "var-lib-kubelet"
       hostPath:
-        path: "/var/lib/kubelet"
+        path: "/var/lib/kubernetes"

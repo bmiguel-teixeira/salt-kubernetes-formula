@@ -1,4 +1,6 @@
 {%- from "kubernetes/map.jinja" import common with context %}
+{%- set internal_ip = grains.get('ipv4')[0] %}
+
 apiVersion: "v1"
 kind: "Pod"
 metadata:
@@ -15,31 +17,34 @@ spec:
       command:
         - "/hyperkube"
         - "apiserver"
+        - "--authorization-mode=Node,RBAC"
         - "--admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota"
         - "--address=0.0.0.0"
         - "--allow-privileged"
         - "--insecure-port=8080"
         - "--secure-port=443"
         - "--service-cluster-ip-range=10.0.100.0/16"
-        - "--etcd-servers=http://127.0.0.1:2379"
-        - "--etcd-quorum-read=true"
-        - "--advertise-address={{common.cluster_dns}}"
-        - "--tls-cert-file={{common.api_server_crt}}"
-        - "--tls-private-key-file={{common.api_server_key}}"
-        - "--client-ca-file={{common.ca_crt}}"
-        - "--service-account-key-file={{common.api_server_key}}"
+        - "--etcd-cafile=/etc/kubernetes/certs/ca.crt"
+        - "--etcd-certfile=/etc/kubernetes/certs/api.crt"
+        - "--etcd-keyfile=/etc/kubernetes/certs/api.key"
+        - "--etcd-servers=https://10.0.1.4:2379,https://10.0.1.5:2379"
+        - "--advertise-address={{internal_ip}}"
+        - "--tls-cert-file=/etc/kubernetes/certs/api.crt"
+        - "--tls-private-key-file=/etc/kubernetes/certs/api.key"
+        - "--client-ca-file=/etc/kubernetes/certs/ca.crt"
+        - "--service-account-key-file=/etc/kubernetes/certs/sa.crt"
         - "--service-node-port-range=9000-10000"
         - "--storage-backend=etcd3"
-        - "--v=4"
+        - "--v=2"
       volumeMounts:
         - name: "etc-kubernetes"
-          mountPath: "{{common.kubernetes_base_path}}"
+          mountPath: "/etc/kubernetes/certs"
         - name: "var-lib-kubelet"
           mountPath: "/var/lib/kubelet"
   volumes:
     - name: "etc-kubernetes"
       hostPath:
-        path: "{{common.kubernetes_base_path}}"
+        path: "{{common.certs_path}}"
     - name: "var-lib-kubelet"
       hostPath:
         path: "/var/lib/kubelet"

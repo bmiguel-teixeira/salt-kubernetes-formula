@@ -2,26 +2,31 @@
 {%- set worker_nodes = pillar['kubernetes']['nodes']['minions'] %}
 {%- set all_workers = (master_nodes + worker_nodes) | join(',') %}
 
+
+base.sync:
+  salt.function:
+    - name: saltutil.sync_all
+    - tgt: L@{{all_workers}}
+    - tgt_type: compound
+
+common.state:
+  salt.state:
+    - sls: kubernetes.common
+    - tgt: L@{{all_workers}}
+    - tgt_type: compound
+
 setup.root_ca:
   salt.state:
-    - sls: kubernetes.certificates.certificates_root
+    - sls: kubernetes.root_certificate
     - tgt: {{master_nodes[0]}}
 
 copy_ca_key:
   cmd.run:
-    - name: 'salt-cp --list {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/srv/kubernetes/ca.key /srv/kubernetes'
+    - name: 'salt-cp --list {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/etc/kubernetes/certs/ca.key etc/kubernetes/certs'
 
 copy_ca_crt:
   cmd.run:
-    - name: 'salt-cp --list {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/srv/kubernetes/ca.crt /srv/kubernetes'
-
-#Generate certs
-generate.certificates:
-  salt.state:
-    - sls: kubernetes.certificates.certificates
-    - tgt: L@{{all_workers}}
-    - tgt_type: compound
-
+    - name: 'salt-cp --list {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/etc/kubernetes/certs/ca.crt etc/kubernetes/certs'
 
 # Provision master nodes
 master_nodes:

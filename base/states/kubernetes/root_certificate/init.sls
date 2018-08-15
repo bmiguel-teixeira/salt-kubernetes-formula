@@ -1,8 +1,10 @@
 {%- from "kubernetes/map.jinja" import common with context %}
 
-dummy.working.dir:
+certs_path.working.dir:
   file.directory:
-    - name: {{common.kubernetes_base_path}}
+    - name: {{common.certs_path}}
+    - group: root
+    - dir_mode: 755
 
 generate_ca_private_key:
   cmd.run:
@@ -11,7 +13,7 @@ generate_ca_private_key:
 
 generate_ca_certificate:
   cmd.run:
-    - name: openssl req -x509 -new -nodes -key {{common.ca_key}} -subj "/CN={{common.cluster_dns}}" -days 10000 -out {{common.ca_crt}}
+    - name: openssl req -x509 -new -nodes -key {{common.ca_key}} -subj "/CN={{common.cluster_name}}" -days 10000 -out {{common.ca_crt}}
     - unless: test -e {{common.ca_crt}}
 
 copy.ca_key:

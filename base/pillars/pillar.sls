@@ -1,19 +1,17 @@
 kubernetes:
+  etcd_cluster:
+    minions:
+     - etcd00
   masters:
     schedulable: false
     minions:
-      - kubm1
-      - kubm2
+      - kubm00
   nodes:
     minions:
-      - kubl1
-      - kubl2
-      - kubl3
-      - kubl4
+      - kubl00
   common:
     cluster_name: kubcluster
     cluster_dns: 10.0.1.5
     cluster_cidr: 10.100.0.0/16
     version: v1.10.3
     docker_binaries: gcr.io/google-containers/hyperkube
-    

@@ -11,3 +11,9 @@ module_dirs:
   - /srv/salt/ext
 
 file_recv: true
+
+fileserver_backend:
+  - git
+
+gitfs_remotes:
+  - git://github.com/bmiguel-teixeira/salt-kubernetes-formula.git

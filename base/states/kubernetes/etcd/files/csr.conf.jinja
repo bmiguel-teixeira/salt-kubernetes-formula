@@ -1,6 +1,4 @@
 {%- set node = grains.get('nodename')  %}
-{%- set ip_address = grains.get('ip4_interfaces:eth0') %}
-{%- set ipaddress = grains.get('ipv4')[0] %}
 
 [ req ]
 default_bits = 2048
@@ -21,7 +19,7 @@ subjectAltName = @alt_names
 [ alt_names ]
 DNS.1 = {{node}}
 IP.1 = 127.0.0.1
-IP.2 = {{ipaddress}}
+IP.2 = {{IP}}
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always

@@ -1,30 +1,36 @@
-{%- set master_nodes = pillar['kubernetes']['masters']['minions'] %}
-{%- set worker_nodes = pillar['kubernetes']['nodes']['minions'] %}
-{%- set etcd_nodes = pillar['kubernetes']['etcd_cluster']['minions'] %}
-{%- set all_workers = (master_nodes + worker_nodes + etcd_nodes) | join(',') %}
+{%- set master_nodes = pillar['kubernetes']['masters']['nodes'] %}
+{%- set worker_nodes = pillar['kubernetes']['workers']['nodes'] %}
+{%- set etcd_nodes = pillar['kubernetes']['etcd_cluster']['nodes'] %}
+{%- set all_workers = (master_nodes + worker_nodes + etcd_nodes) %}
 
-# common.state:
-#  salt.state:
-#    - sls: kubernetes.common
-#    - tgt: L@{{all_workers}}
-#    - tgt_type: compound
+{% for worker in all_workers %}
+common.state.{{worker}}:
+ salt.state:
+   - sls: kubernetes.common
+   - tgt: S@{{worker}}
+   - tgt_type: compound
+{% endfor %} 
 
-etcd.cluster:
+{% for etcd in etcd_nodes %}
+etcd.cluster.{{etcd}}:
   salt.state:
     - sls: kubernetes.etcd
-    - tgt: L@{{ etcd_nodes | join(',') }}
+    - tgt: S@{{etcd}}
     - tgt_type: compound
+{% endfor %} 
 
-# Provision master nodes
-# master_nodes:
-#   salt.state:
-#     - sls: kubernetes.master
-#     - tgt: L@{{master_nodes | join(',')}}
-#     - tgt_type: compound
+{% for master in master_nodes %}
+master.nodes.{{ master }}:
+  salt.state:
+    - sls: kubernetes.master
+    - tgt: S@{{ master }}
+    - tgt_type: compound
+{% endfor %} 
 
-#Generate certs
-# worker_nodes:
-#   salt.state:
-#     - sls: kubernetes.node
-#     - tgt: L@{{worker_nodes| join(',')}}
-#     - tgt_type: compound
+{% for worker in worker_nodes %}
+worker.nodes.{{ worker }}:
+  salt.state:
+    - sls: kubernetes.node
+    - tgt: S@{{ worker }}
+    - tgt_type: compound
+{% endfor %} 

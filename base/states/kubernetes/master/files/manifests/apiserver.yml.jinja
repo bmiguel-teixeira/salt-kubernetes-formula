@@ -1,5 +1,6 @@
 {%- from "kubernetes/map.jinja" import common with context %}
-{%- set internal_ip = grains.get('ipv4')[0] %}
+{%- set ip_address = salt['grains.get']('ip4_interfaces:eth0')[0]  %}
+{%- set etcd_load_balancer = salt.pillar.get('kubernetes:etcd_cluster:load_balancer') %}
 
 apiVersion: "v1"
 kind: "Pod"
@@ -27,8 +28,8 @@ spec:
         - "--etcd-cafile=/etc/kubernetes/certs/ca.crt"
         - "--etcd-certfile=/etc/kubernetes/certs/api.crt"
         - "--etcd-keyfile=/etc/kubernetes/certs/api.key"
-        - "--etcd-servers=https://10.0.1.4:2379,https://10.0.1.5:2379"
-        - "--advertise-address={{internal_ip}}"
+        - "--etcd-servers=https://{{etcd_load_balancer}}:2379"
+        - "--advertise-address={{ip_address}}"
         - "--tls-cert-file=/etc/kubernetes/certs/api.crt"
         - "--tls-private-key-file=/etc/kubernetes/certs/api.key"
         - "--client-ca-file=/etc/kubernetes/certs/ca.crt"

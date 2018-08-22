@@ -1,4 +1,4 @@
 include:
   - kubernetes.common.standard
   - kubernetes.common.docker
-# - kubernetes.common.kubelet_certs
+  - kubernetes.common.kubelet_certs

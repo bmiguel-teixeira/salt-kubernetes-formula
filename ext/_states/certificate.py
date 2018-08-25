@@ -1,4 +1,5 @@
 import logging
+import os
 from OpenSSL.crypto import  *
 
 log = logging.getLogger(__name__)
@@ -6,9 +7,6 @@ log = logging.getLogger(__name__)
 
 def __virtual__():
     return 'certificate'
-
-def private_key_present():
-    pass
 
 def generate_and_sign_certificate(ca_private_key, ca_certificate, private_key, distinguished_names, subjectAltNames, output_path):
     ret = {
@@ -39,9 +37,22 @@ def generate_and_sign_certificate(ca_private_key, ca_certificate, private_key, d
     extensions.append(X509Extension(b"basicConstraints", False, "CA:FALSE".encode("utf-8")))
     extensions.append(X509Extension(b"keyUsage", False, "keyEncipherment, dataEncipherment".encode("utf-8")))
     extensions.append(X509Extension(b"extendedKeyUsage", False, "serverAuth, clientAuth".encode("utf-8")))
-
-
     certificate_request.add_extensions(extensions)
+
+    # Validate if certificate already exists
+    if os.path.isfile(output_path):
+        try:
+            output_certificate = load_certificate(FILETYPE_PEM, open(output_path,"r").read())
+            store = X509Store()
+            store.add_cert(signing_pcert)
+            check = X509StoreContext(store, output_certificate).verify_certificate()
+            if check is None:
+                ret["comment"] = "Valid certificate already present"
+                ret["result"] = True
+                return ret
+        except:
+            log.error("Invalid certificate.")
+        pass
 
     # Sign the certificate
     certificate = X509()
@@ -58,4 +69,9 @@ def generate_and_sign_certificate(ca_private_key, ca_certificate, private_key, d
         my_cert.close()
 
     ret["result"] = True
+    ret["comment"] = "New certificate created."
+    ret['changes'] = {
+        'old': 'Current certificate was not a valid one',
+        'new': 'Generated a new certificated signed by the current CA'
+    }
     return ret

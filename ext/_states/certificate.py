@@ -35,6 +35,12 @@ def generate_and_sign_certificate(ca_private_key, ca_certificate, private_key, d
     extensions = []
     for ext in subjectAltNames:
         extensions.append(X509Extension(b"subjectAltName", False, ext.encode("utf-8")))
+    extensions.append(X509Extension(b"authorityKeyIdentifier", False, "keyid".encode("utf-8"), issuer=signing_pcert))
+    extensions.append(X509Extension(b"basicConstraints", False, "CA:FALSE".encode("utf-8")))
+    extensions.append(X509Extension(b"keyUsage", False, "keyEncipherment, dataEncipherment".encode("utf-8")))
+    extensions.append(X509Extension(b"extendedKeyUsage", False, "serverAuth, clientAuth".encode("utf-8")))
+
+
     certificate_request.add_extensions(extensions)
 
     # Sign the certificate
@@ -44,6 +50,7 @@ def generate_and_sign_certificate(ca_private_key, ca_certificate, private_key, d
     certificate.set_issuer(signing_pcert.get_subject())
     certificate.set_subject(certificate_request.get_subject())
     certificate.set_pubkey(certificate_request.get_pubkey())
+    certificate.add_extensions(certificate_request.get_extensions())
     certificate.sign(signing_pkey, "sha256")
 
     with open(output_path,"w") as my_cert:

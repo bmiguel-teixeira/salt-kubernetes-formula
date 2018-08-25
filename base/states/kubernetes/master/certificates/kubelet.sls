@@ -2,34 +2,28 @@
 {%- set node = grains.get('nodename')  %}
 {%- set kubelet_key = 'kubelet.key'  %}
 {%- set kubelet_crt = 'kubelet.crt'  %}
+{%- set ip_address = salt['grains.get']('ip4_interfaces:eth0')[0]  %}
 
 working.dir:
   file.directory:
-    - name: {{common.certs_path}}
+    - name: "{{common.certs_path}}"
 
 generate_private_key:
-  cmd.run:
-    - name: openssl genrsa -out {{common.certs_path}}/{{kubelet_key}} 2048
-    #- unless: test -e {{common.certs_path}}/{{kubelet_key}}
+  x509.private_key_managed:
+    - name: "{{common.certs_path}}/{{kubelet_key}}"
+    - bits: 2048
 
-csr.conf:
-  file.managed:
-    - name: {{common.certs_path}}/kubelet_csr.conf
-    - source: salt://kubernetes/common/files/csr.conf.jinja
-    - template: jinja
-    - user: root
-    - group: root
-    - mode: 644
-    - defaults:
-      O: system:nodes
-      CN: system:node:{{node}}
-
-generate_request:
-  cmd.run:
-    - name: openssl req -new -key {{common.certs_path}}/{{kubelet_key}} -out {{common.certs_path}}/server.csr -config {{common.certs_path}}/kubelet_csr.conf
-    #- unless: test -e {{common.certs_path}}/server.csr
-
-generate_signed_crt:
-  cmd.run:
-    - name: openssl x509 -req -in {{common.certs_path}}/server.csr -CA {{common.ca_crt}} -CAkey {{common.ca_key}} -CAcreateserial -out {{common.certs_path}}/{{kubelet_crt}} -days 10000 -extensions v3_ext -extfile {{common.certs_path}}/kubelet_csr.conf
-    #- unless: test -e {{common.certs_path}}/{{kubelet_crt}}
+generate_certificate:
+  certificate.generate_and_sign_certificate:
+    - ca_private_key: "{{common.ca_key}}"
+    - ca_certificate: "{{common.ca_crt}}"
+    - private_key: "{{common.certs_path}}/{{kubelet_key}}"
+    - distinguished_names:
+        O: "system:nodes"
+        CN: "system:node:{{node}}"
+    - subjectAltNames:
+      - "DNS.1:kubernetes"
+      - "DNS.2:{{node}}"
+      - "IP.1:127.0.0.1"
+      - "IP.2:{{ip_address}}"
+    - output_path: "{{common.certs_path}}/{{kubelet_crt}}"

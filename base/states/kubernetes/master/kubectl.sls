@@ -5,13 +5,26 @@ kubectl.working.dir:
   file.directory:
     - name: {{common.config_path}}
 
-
 kubectl.package:
   file.managed:
     - name: /usr/local/bin/kubectl
     - source: https://storage.googleapis.com/kubernetes-release/release/{{common.version}}/bin/linux/amd64/kubectl
     - skip_verify: true
     - mode: 744
+
+controller.config_test:
+  file.managed:
+    - name: "{{common.config_path}}/controller.kubeconfig_2"
+    - source: salt://kubernetes/master/files/templates/kubeconfig.yml.jinja
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: 644
+    - defaults:
+        user: "system:kube-controller-manager"
+        ca_certificate: {{common.ca_crt}}
+        client_certificate: {{common.certs_path}}/controller.crt
+        client_key: {{common.certs_path}}/controller.key
 
 kubelet.config:
   cmd.run:

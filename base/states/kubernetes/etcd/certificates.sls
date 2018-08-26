@@ -1,32 +1,25 @@
 {%- from "kubernetes/map.jinja" import common with context %}
 {%- set nodename = grains.get('nodename')  %}
-{%- set etcd_key = 'etcd.key'  %}
-{%- set etcd_crt = 'etcd.crt'  %}
-{%- set etcd_csr = 'etcd.csr'  %}
+{%- set key = 'etcd.key'  %}
+{%- set certificate = 'etcd.crt'  %}
+{%- set ip_address = salt['grains.get']('ip4_interfaces:eth0')[0]  %}
 
-generate_private_key:
-  cmd.run:
-    - name: openssl genrsa -out {{common.certs_path}}/{{etcd_key}} 2048
-    - unless: test -e {{common.certs_path}}/{{etcd_key}}
+controller.generate.private.key:
+  x509.private_key_managed:
+    - name: "{{common.certs_path}}/{{key}}"
+    - bits: 2048
 
-csr.conf:
-  file.managed:
-    - name: {{common.certs_path}}/etcd_csr.conf
-    - source: salt://kubernetes/common/files/csr.conf.jinja
-    - template: jinja
-    - user: root
-    - group: root
-    - mode: 644
-    - defaults:
-      O: etcd-server
-      CN: etcd-server
-
-generate_request:
-  cmd.run:
-    - name: openssl req -new -key {{common.certs_path}}/{{etcd_key}} -out {{common.certs_path}}/{{etcd_csr}} -config {{common.certs_path}}/etcd_csr.conf
-    - unless: test -e {{common.certs_path}}/etcd.csr
-
-generate_signed_crt:
-  cmd.run:
-    - name: openssl x509 -req -in {{common.certs_path}}/{{etcd_csr}} -CA {{common.ca_crt}} -CAkey {{common.ca_key}} -CAcreateserial -out {{common.certs_path}}/{{etcd_crt}} -days 10000 -extensions v3_ext -extfile {{common.certs_path}}/etcd_csr.conf
-    - unless: test -e {{common.certs_path}}/{{etcd_crt}}
+controller.generate.certificate:
+  certificate.generate_and_sign_certificate:
+    - ca_private_key: "{{common.ca_key}}"
+    - ca_certificate: "{{common.ca_crt}}"
+    - private_key: "{{common.certs_path}}/{{key}}"
+    - distinguished_names:
+        O: "etcd-server"
+        CN: "etcd-server"
+    - subjectAltNames:
+      - "DNS.1:kubernetes"
+      - "DNS.2:{{node}}"
+      - "IP.1:127.0.0.1"
+      - "IP.2:{{ip_address}}"
+    - output_path: "{{common.certs_path}}/{{certificate}}"

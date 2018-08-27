@@ -1,3 +1,5 @@
+{%- from "kubernetes/map.jinja" import common with context %}
+
 docker_repo:
  pkgrepo.managed:
   - humanname: docker_engine
@@ -10,5 +12,5 @@ docker_repo:
 docker_engine:
  pkg.installed:
   - name: docker-ce
-  - version: '18.03.0~ce-0~ubuntu'
+  - version: {{common.docker_engine_version}}
   - refresh: True

@@ -1,0 +1,42 @@
+{%- from "kubernetes/map.jinja" import common with context %}
+
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    kubernetes.io/cluster-service: "true"
+    component: kube-proxy
+    tier: node
+  name: kube-proxy
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        component: kube-proxy
+        tier: node
+    spec:
+      containers:
+      - command:
+        - "/hyperkube"
+        - "proxy"
+        - "--kubeconfig={{common.config_path}}/kubeproxy.kubeconfig"
+        - "--cluster-cidr={{common.cluster_cidr}}"
+        - "--feature-gates=ExperimentalCriticalPodAnnotation=true"
+        image: {{image}}
+        name: kube-proxy
+        resources:
+          requests:
+            cpu: 100m
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: "etc-kubernetes-config"
+            mountPath: "{{common.config_path}}"
+      hostNetwork: true
+      volumes:
+        - name: "etc-kubernetes-config"
+          hostPath:
+            path: "{{common.config_path}}"
+      nodeSelector:
+        beta.kubernetes.io/os: linux

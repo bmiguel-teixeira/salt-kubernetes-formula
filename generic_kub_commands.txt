@@ -1,0 +1,6 @@
+kubectl run hello --image=tutum/hello-world --port=8080
+
+
+kubectl expose deployment hello --type=NodePort
+
+

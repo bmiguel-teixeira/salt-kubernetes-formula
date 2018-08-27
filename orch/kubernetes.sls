@@ -1,43 +1,36 @@
-{%- set master_nodes = pillar['kubernetes']['masters']['minions'] %}
-{%- set worker_nodes = pillar['kubernetes']['nodes']['minions'] %}
-{%- set all_workers = (master_nodes + worker_nodes) | join(',') %}
+{%- set master_nodes = pillar['kubernetes']['masters']['nodes'] %}
+{%- set worker_nodes = pillar['kubernetes']['workers']['nodes'] %}
+{%- set etcd_nodes = pillar['kubernetes']['etcd_cluster']['nodes'] %}
+{%- set all_workers = (master_nodes + worker_nodes + etcd_nodes) %}
 
+{% for worker in master_nodes %}
+common.state.{{worker}}:
+ salt.state:
+   - sls: kubernetes.common
+   - tgt: S@{{worker}}
+   - tgt_type: compound
+{% endfor %} 
 
-base.sync:
-  salt.function:
-    - name: saltutil.sync_all
-    - tgt: L@{{all_workers}}
-    - tgt_type: compound
+#{% for etcd in etcd_nodes %}
+#etcd.cluster.{{etcd}}:
+#  salt.state:
+#    - sls: kubernetes.etcd
+#    - tgt: S@{{etcd}}
+#    - tgt_type: compound
+#{% endfor %} 
 
-common.state:
-  salt.state:
-    - sls: kubernetes.common
-    - tgt: L@{{all_workers}}
-    - tgt_type: compound
-
-setup.root_ca:
-  salt.state:
-    - sls: kubernetes.root_certificate
-    - tgt: {{master_nodes[0]}}
-
-copy_ca_key:
-  cmd.run:
-    - name: 'salt-cp --list {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/etc/kubernetes/certs/ca.key etc/kubernetes/certs'
-
-copy_ca_crt:
-  cmd.run:
-    - name: 'salt-cp --list {{ all_workers }} /var/cache/salt/master/minions/{{master_nodes[0]}}/files/etc/kubernetes/certs/ca.crt etc/kubernetes/certs'
-
-# Provision master nodes
-master_nodes:
+{% for master in master_nodes %}
+master.nodes.{{ master }}:
   salt.state:
     - sls: kubernetes.master
-    - tgt: L@{{master_nodes | join(',')}}
+    - tgt: S@{{ master }}
     - tgt_type: compound
+{% endfor %} 
 
-#Generate certs
-worker_nodes:
-  salt.state:
-    - sls: kubernetes.node
-    - tgt: L@{{worker_nodes| join(',')}}
-    - tgt_type: compound
+#{% for worker in worker_nodes %}
+#worker.nodes.{{ worker }}:
+#  salt.state:
+#    - sls: kubernetes.node
+#    - tgt: S@{{ worker }}
+#    - tgt_type: compound
+#{% endfor %} 

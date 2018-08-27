@@ -1,5 +1,5 @@
 include:
-- kubernetes.node.kubeproxy
-- kubernetes.node.admin
+- kubernetes.common
+- kubernetes.node.certificates
 - kubernetes.node.kubectl
 - kubernetes.node.kubelet

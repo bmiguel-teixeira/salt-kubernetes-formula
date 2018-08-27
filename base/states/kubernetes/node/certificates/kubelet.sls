@@ -1,5 +1,5 @@
 {%- from "kubernetes/map.jinja" import common with context %}
-{%- set nodename = grains.get('nodename')  %}
+{%- set node = grains.get('nodename')  %}
 {%- set key = 'kubelet.key'  %}
 {%- set certificate = 'kubelet.crt'  %}
 {%- set ip_address = salt['grains.get']('ip4_interfaces:eth0')[0]  %}

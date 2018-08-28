@@ -4,3 +4,20 @@ kubectl run hello --image=tutum/hello-world --port=8080
 kubectl expose deployment hello --type=NodePort
 
 
+kubectl -n=kube-system create secret generic kubeproxy-config --from-file=./kubeproxy.kubeconfig
+
+
+
+
+
+
+vim  /lib/systemd/system/docker.service
+MountFlags=shared
+
+
+
+
+kubectl config set-context $(kubectl config current-context) --namespace=kube-system
+
+
+

@@ -1,30 +1,30 @@
 {%- from "kubernetes/map.jinja" import common with context %}
 {%- set schedulable = salt.pillar.get('kubernetes:masters:schedulable') %}
 
-start.kubelet:
-  docker_container.running:
-    - name: kubelet
-    - image: "{{common.docker_binaries}}:{{common.version}}"
-    - network_mode: host
-    - pid_mode: host
-    - privileged: true
-    - binds:
-      - /sys:/sys
-      - /var/lib/docker/:/var/lib/docker
-      - /var/lib/kubelet:/var/lib/kubelet
-      - {{common.config_path}}/:{{common.config_path}}
-      - /var/run:/var/run
-      - {{common.manifests_path}}:{{common.manifests_path}}
-    - command: "/hyperkube kubelet \
-        --kubeconfig={{common.config_path}}/kubelet.kubeconfig \
-        --address=0.0.0.0 \
-        --allow-privileged=true \
-        --enable-server \
-        --enable-debugging-handlers \
-        --pod-manifest-path={{common.manifests_path}} \
-        --register-schedulable={{schedulable}} \
-        --node-labels=role=master \
-        --network-plugin=kubenet \
-        --node-status-update-frequency=10s \
-        --v=2 \
-        --non-masquerade-cidr={{common.cluster_cidr}}"
+kubelet_repo:
+ pkgrepo.managed:
+  - humanname: kubelet_engine
+  - name: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+  - dist: kubernetes-xenial
+  - file:  /etc/apt/sources.list.d/kubernetes.list
+  - gpgcheck: 1
+  - key_url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+kubelet_engine:
+ pkg.installed:
+  - name: kubelet
+  - version: 1.10.3-00
+  - refresh: True
+
+kubelet.svc:
+  file.managed:
+    - name: /etc/systemd/system/kubelet.service
+    - source: salt://kubernetes/master/files/services/kubelet.jinja
+    - template: jinja
+    - user: root
+    - group: root
+    - defaults:
+        kubeconfig: {{common.config_path}}/kubelet.kubeconfig
+        manifests_path: {{common.manifests_path}}
+        schedulable: {{schedulable}}
+        cidr: {{common.cluster_cidr}}

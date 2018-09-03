@@ -3,16 +3,16 @@
 start.kubelet:
   docker_container.running:
     - name: kubelet
-    - image: "{{common.docker_binaries}}:{{common.version}}"
+    - image: "{{common.docker_binaries}}:v{{common.version}}"
     - network_mode: host
     - pid_mode: host
     - privileged: true
     - binds:
-      - /sys:/sys
-      - /var/lib/docker/:/var/lib/docker
-      - /var/lib/kubelet:/var/lib/kubelet
+      - /sys:/sys:rw,z
+      - /var/lib/docker/:/var/lib/docker:rw,z
+      - /var/lib/kubelet:/var/lib/kubelet:rw,z
       - {{common.config_path}}/:{{common.config_path}}
-      - /var/run:/var/run
+      - /var/run:/var/run:rw,z
       - {{common.manifests_path}}:{{common.manifests_path}}
     - command: "/hyperkube kubelet \
         --kubeconfig={{common.config_path}}/kubelet.kubeconfig \

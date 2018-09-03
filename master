@@ -1,11 +1,11 @@
 file_roots:
-  base:
-    - /srv/salt/base/states
+  dev:
+    - /srv/salt/dev/states
     - /srv/salt/orch
 
 pillar_roots:
-  base:
-    - /srv/salt/base/pillars
+  dev:
+    - /srv/salt/dev/pillars
 
 module_dirs:
   - /srv/salt/ext

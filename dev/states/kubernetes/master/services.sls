@@ -9,7 +9,7 @@ kubeproxy.svc:
     - group: root
     - mode: 644
     - defaults:
-        image: {{common.docker_binaries}}:{{common.version}}
+        image: {{common.docker_binaries}}:v{{common.version}}
 
 dashboards.svc:
   file.managed:
@@ -20,4 +20,4 @@ dashboards.svc:
     - group: root
     - mode: 644
     - defaults:
-        image: {{common.docker_binaries}}:{{common.version}}
+        image: {{common.docker_binaries}}:v{{common.version}}

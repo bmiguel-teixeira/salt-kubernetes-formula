@@ -1,21 +1,21 @@
 kubernetes:
   etcd_cluster:
     docker_image: quay.io/coreos/etcd:v3.1.0
-    load_balancer: 10.10.1.5
+    load_balancer: 10.10.1.6
     nodes:
-      - 10.10.1.5
+      - 10.10.1.6
   masters:
     schedulable: false
     nodes:
-      - 10.10.1.4
+      - 10.10.1.5
   workers:
     nodes:
-      - 10.10.1.6
+      - 10.10.1.4
   common:
     cluster_name: kubcluster
-    cluster_dns: 10.10.1.4
+    cluster_dns: 10.10.1.5
     cluster_cidr: 10.100.0.0/16
-    version: v1.10.3
+    version: 1.10.3
     docker_binaries: gcr.io/google-containers/hyperkube
     docker_engine_version: 18.03.0~ce-0~ubuntu
     ca_private_key: |

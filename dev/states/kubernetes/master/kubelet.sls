@@ -4,7 +4,7 @@
 start.kubelet:
   docker_container.running:
     - name: kubelet
-    - image: "{{common.docker_binaries}}:{{common.version}}"
+    - image: "{{common.docker_binaries}}:v{{common.version}}"
     - network_mode: host
     - pid_mode: host
     - privileged: true

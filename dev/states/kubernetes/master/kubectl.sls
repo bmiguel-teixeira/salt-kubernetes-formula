@@ -8,7 +8,7 @@ kubectl.working.dir:
 kubectl.package:
   file.managed:
     - name: /usr/local/bin/kubectl
-    - source: https://storage.googleapis.com/kubernetes-release/release/{{common.version}}/bin/linux/amd64/kubectl
+    - source: https://storage.googleapis.com/kubernetes-release/release/v{{common.version}}/bin/linux/amd64/kubectl
     - skip_verify: true
     - mode: 744
 
@@ -42,6 +42,10 @@ scheduler.config:
     - cluster_dns: "{{common.cluster_dns}}"
     - output_path: "{{common.config_path}}/scheduler.kubeconfig"
 
+admin_user.working.dir:
+  file.directory:
+    - name: /root/.kube/
+
 admin.config:
   kubectl.kubeconfig_present:
     - ca_certificate: "{{common.ca_crt}}"
@@ -51,3 +55,5 @@ admin.config:
     - cluster_name: "{{common.cluster_name}}"
     - cluster_dns: "{{common.cluster_dns}}"
     - output_path: "/root/.kube/config"
+    - require:
+      - admin_user.working.dir

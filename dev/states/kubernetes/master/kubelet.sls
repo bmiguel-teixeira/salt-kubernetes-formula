@@ -9,11 +9,12 @@ start.kubelet:
     - pid_mode: host
     - privileged: true
     - binds:
-      - /sys:/sys:rw,z
-      - /var/lib/docker/:/var/lib/docker:rw,z
-      - /var/lib/kubelet:/var/lib/kubelet:rw,z
+      - /sys:/sys:ro
+      - /:/rootfs:ro
+      - /var/lib/docker/:/var/lib/docker:rw
+      - /var/lib/kubelet:/var/lib/kubelet:shared
       - {{common.config_path}}/:{{common.config_path}}
-      - /var/run:/var/run:rw,z
+      - /var/run:/var/run:rw
       - {{common.manifests_path}}:{{common.manifests_path}}
     - command: "/hyperkube kubelet \
         --kubeconfig={{common.config_path}}/kubelet.kubeconfig \

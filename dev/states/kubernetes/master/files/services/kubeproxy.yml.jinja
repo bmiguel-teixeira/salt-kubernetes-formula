@@ -36,7 +36,7 @@ spec:
       hostNetwork: true
       volumes:
         - name: "etc-kubernetes-config"
-          hostPath:
-            path: "{{common.config_path}}"
+          secret:
+            secretName: kubeproxy-config
       nodeSelector:
         beta.kubernetes.io/os: linux

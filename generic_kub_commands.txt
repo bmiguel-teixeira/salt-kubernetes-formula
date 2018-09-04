@@ -1,7 +1,6 @@
-kubectl run hello --image=tutum/hello-world --port=8080
-
-
+kubectl run hello --image=tutum/hello-world --port=80
 kubectl expose deployment hello --type=NodePort
+
 
 
 kubectl -n=kube-system create secret generic kubeproxy-config --from-file=./configs/kubeproxy.kubeconfig

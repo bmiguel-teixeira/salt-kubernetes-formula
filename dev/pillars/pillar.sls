@@ -15,6 +15,7 @@ kubernetes:
     cluster_name: kubcluster
     cluster_dns: 10.10.1.5
     cluster_cidr: 10.100.0.0/16
+    cluster_services_cidr: 10.200.0.0/16
     version: 1.10.3
     docker_binaries: gcr.io/google-containers/hyperkube
     docker_engine_version: 18.03.0~ce-0~ubuntu

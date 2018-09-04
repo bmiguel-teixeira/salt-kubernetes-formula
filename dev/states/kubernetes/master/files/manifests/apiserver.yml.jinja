@@ -1,6 +1,7 @@
 {%- from "kubernetes/map.jinja" import common with context %}
 {%- set ip_address = salt['grains.get']('ip4_interfaces:eth0')[0]  %}
 {%- set etcd_load_balancer = salt.pillar.get('kubernetes:etcd_cluster:load_balancer') %}
+{%- set cluster_services_cidr = salt.pillar.get('kubernetes:common:cluster_services_cidr') %}
 
 apiVersion: "v1"
 kind: "Pod"
@@ -24,7 +25,7 @@ spec:
         - "--allow-privileged"
         - "--insecure-port=8080"
         - "--secure-port=443"
-        - "--service-cluster-ip-range=10.0.100.0/16"
+        - "--service-cluster-ip-range={{cluster_services_cidr}}"
         - "--etcd-cafile=/etc/kubernetes/certs/ca.crt"
         - "--etcd-certfile=/etc/kubernetes/certs/api.crt"
         - "--etcd-keyfile=/etc/kubernetes/certs/api.key"
